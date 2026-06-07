@@ -23,3 +23,26 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# AI
+.agents
+.ai
+.gemini
+.gemini-clipboard
+.github/copilot-instructions.md
+.claude/skills
+.claude/*.json
+.junie
+.codex
+.cursor
+.mcp.json
+AGENTS.md
+boost.json
+CLAUDE.md
+GEMINI.md
+opencode.json
+.agent
+tests/tmp
+/public/media/*
+tests/Browser/Screenshots
+.playwright-mcp
