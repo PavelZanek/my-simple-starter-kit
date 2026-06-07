@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This script adds the Livewire ⚡ emoji prefix to blade files.
  * Run after composer create-project to add emojis to filenames.

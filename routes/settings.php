@@ -1,19 +1,25 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+declare(strict_types=1);
 
-Route::middleware(['auth'])->group(function () {
+use Illuminate\Support\Facades\Route;
+use Livewire\Mechanisms\HandleRouting\LivewirePageController;
+
+Route::middleware(['auth'])->group(function (): void {
     Route::redirect('settings', 'settings/profile');
 
-    Route::livewire('settings/profile', 'pages::settings.profile')->name('profile.edit');
+    $route = Route::get('settings/profile', LivewirePageController::class);
+    $route->action['livewire_component'] = 'pages::settings.profile';
+    $route->name('profile.edit');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::livewire('settings/appearance', 'pages::settings.appearance')->name('appearance.edit');
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    $route = Route::get('settings/appearance', LivewirePageController::class);
+    $route->action['livewire_component'] = 'pages::settings.appearance';
+    $route->name('appearance.edit');
 
-    Route::livewire('settings/security', 'pages::settings.security')
-        ->middleware([
-            'password.confirm',
-        ])
+    $route = Route::get('settings/security', LivewirePageController::class);
+    $route->action['livewire_component'] = 'pages::settings.security';
+    $route->middleware(['password.confirm'])
         ->name('security.edit');
 });

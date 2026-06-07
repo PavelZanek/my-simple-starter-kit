@@ -1,0 +1,30 @@
+includes:
+	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- phpstan-baseline.neon
+
+parameters:
+#	checkMissingIterableValueType: true
+
+	level: max
+
+	parallel:
+	    maximumNumberOfProcesses: 6
+
+	paths:
+	    - app
+	    - config
+	    - bootstrap
+	    - database/factories
+	    - routes
+
+#	scanFiles:
+#	    - _ide_helper_models.php
+#	    - _ide_helper.php
+#	    - .phpstorm.meta.php
+
+
+	reportUnmatchedIgnoredErrors: false
+#	ignoreErrors:
+#	    - '#PHPDoc tag @mixin contains unknown class#'
+
+#	checkGenericClassInNonGenericObjectType: false

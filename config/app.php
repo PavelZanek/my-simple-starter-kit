@@ -1,5 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+$envString = static function (string $key, string $default): string {
+    $value = env($key, $default);
+
+    return is_string($value) ? $value : $default;
+};
+
 return [
 
     /*
@@ -13,7 +21,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => $envString('APP_NAME', 'Laravel'),
 
     /*
     |--------------------------------------------------------------------------
@@ -97,11 +105,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'key' => env('APP_KEY'),
+    'key' => $envString('APP_KEY', ''),
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', (string) env('APP_PREVIOUS_KEYS', '')),
+            explode(',', $envString('APP_PREVIOUS_KEYS', '')),
         ),
     ],
 

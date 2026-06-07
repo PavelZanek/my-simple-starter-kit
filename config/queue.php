@@ -1,5 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+$toInt = static function (mixed $value, int $default): int {
+    $filtered = filter_var($value, FILTER_VALIDATE_INT);
+
+    return $filtered === false ? $default : $filtered;
+};
+
+$dbQueueRetryAfter = $toInt(env('DB_QUEUE_RETRY_AFTER', 90), 90);
+$beanstalkdQueueRetryAfter = $toInt(env('BEANSTALKD_QUEUE_RETRY_AFTER', 90), 90);
+$redisQueueRetryAfter = $toInt(env('REDIS_QUEUE_RETRY_AFTER', 90), 90);
+
 return [
 
     /*
@@ -40,7 +52,7 @@ return [
             'connection' => env('DB_QUEUE_CONNECTION'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
             'queue' => env('DB_QUEUE', 'default'),
-            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => $dbQueueRetryAfter,
             'after_commit' => false,
         ],
 
@@ -48,7 +60,7 @@ return [
             'driver' => 'beanstalkd',
             'host' => env('BEANSTALKD_QUEUE_HOST', 'localhost'),
             'queue' => env('BEANSTALKD_QUEUE', 'default'),
-            'retry_after' => (int) env('BEANSTALKD_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => $beanstalkdQueueRetryAfter,
             'block_for' => 0,
             'after_commit' => false,
         ],
@@ -68,7 +80,7 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => $redisQueueRetryAfter,
             'block_for' => null,
             'after_commit' => false,
         ],

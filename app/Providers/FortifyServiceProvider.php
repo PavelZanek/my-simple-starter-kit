@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -45,13 +48,13 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn () => view('pages::auth.login'));
-        Fortify::verifyEmailView(fn () => view('pages::auth.verify-email'));
-        Fortify::twoFactorChallengeView(fn () => view('pages::auth.two-factor-challenge'));
-        Fortify::confirmPasswordView(fn () => view('pages::auth.confirm-password'));
-        Fortify::registerView(fn () => view('pages::auth.register'));
-        Fortify::resetPasswordView(fn () => view('pages::auth.reset-password'));
-        Fortify::requestPasswordResetLinkView(fn () => view('pages::auth.forgot-password'));
+        Fortify::loginView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.login'));
+        Fortify::verifyEmailView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.verify-email'));
+        Fortify::twoFactorChallengeView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.two-factor-challenge'));
+        Fortify::confirmPasswordView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.confirm-password'));
+        Fortify::registerView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.register'));
+        Fortify::resetPasswordView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.reset-password'));
+        Fortify::requestPasswordResetLinkView(fn (): Factory|\Illuminate\Contracts\View\View => view('pages::auth.forgot-password'));
     }
 
     /**
@@ -64,16 +67,18 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(
+                Str::lower($request->string(Fortify::username())->toString()).'|'.($request->ip() ?? ''),
+            );
 
             return Limit::perMinute(5)->by($throttleKey);
         });
 
         RateLimiter::for('passkeys', function (Request $request) {
-            $credentialId = $request->input('credential.id');
+            $credentialId = $request->string('credential.id')->toString();
 
             return Limit::perMinute(10)->by(
-                ($credentialId ?: $request->session()->getId()).'|'.$request->ip(),
+                ($credentialId ?: $request->session()->getId()).'|'.($request->ip() ?? ''),
             );
         });
     }

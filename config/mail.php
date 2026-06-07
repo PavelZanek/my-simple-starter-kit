@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+$envString = static function (string $key, string $default): string {
+    $value = env($key, $default);
+
+    return is_string($value) ? $value : $default;
+};
+
+$appName = $envString('APP_NAME', 'Laravel');
+$appUrl = $envString('APP_URL', 'http://localhost');
+
 return [
 
     /*
@@ -46,7 +57,7 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url($appUrl, PHP_URL_HOST)),
         ],
 
         'ses' => [
@@ -111,8 +122,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
+        'address' => $envString('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'name' => $envString('MAIL_FROM_NAME', $appName),
     ],
 
 ];

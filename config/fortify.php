@@ -1,6 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use Laravel\Fortify\Features;
+
+$appUrl = config('app.url');
+$appUrlHost = is_string($appUrl) ? parse_url($appUrl, PHP_URL_HOST) : null;
+$appUrlHost = is_string($appUrlHost) ? $appUrlHost : null;
 
 return [
 
@@ -143,7 +149,7 @@ return [
     */
 
     'passkeys' => [
-        'relying_party_id' => parse_url(config('app.url'), PHP_URL_HOST),
+        'relying_party_id' => $appUrlHost,
         'allowed_origins' => [config('app.url')],
         'user_handle_secret' => env('PASSKEYS_USER_HANDLE_SECRET', config('app.key')),
         'timeout' => 60000,

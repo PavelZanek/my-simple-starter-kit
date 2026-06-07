@@ -1,9 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
+
+$envString = static function (string $key, string $default): string {
+    $value = env($key, $default);
+
+    return is_string($value) ? $value : $default;
+};
 
 return [
 
@@ -32,7 +40,7 @@ return [
     */
 
     'deprecations' => [
-        'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+        'channel' => $envString('LOG_DEPRECATIONS_CHANNEL', 'null'),
         'trace' => env('LOG_DEPRECATIONS_TRACE', false),
     ],
 
@@ -54,7 +62,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => explode(',', $envString('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
 
@@ -76,7 +84,7 @@ return [
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => env('LOG_SLACK_USERNAME', env('APP_NAME', 'Laravel')),
+            'username' => $envString('LOG_SLACK_USERNAME', $envString('APP_NAME', 'Laravel')),
             'emoji' => env('LOG_SLACK_EMOJI', ':boom:'),
             'level' => env('LOG_LEVEL', 'critical'),
             'replace_placeholders' => true,
@@ -87,9 +95,9 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
             'handler_with' => [
-                'host' => env('PAPERTRAIL_URL'),
-                'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'host' => $envString('PAPERTRAIL_URL', ''),
+                'port' => $envString('PAPERTRAIL_PORT', ''),
+                'connectionString' => 'tls://'.$envString('PAPERTRAIL_URL', '').':'.$envString('PAPERTRAIL_PORT', ''),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],

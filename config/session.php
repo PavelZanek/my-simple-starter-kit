@@ -1,6 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Str;
+
+$envString = static function (string $key, string $default): string {
+    $value = env($key, $default);
+
+    return is_string($value) ? $value : $default;
+};
+
+$sessionLifetime = filter_var(env('SESSION_LIFETIME', 120), FILTER_VALIDATE_INT);
+if ($sessionLifetime === false) {
+    $sessionLifetime = 120;
+}
 
 return [
 
@@ -18,7 +31,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => $envString('SESSION_DRIVER', 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +45,7 @@ return [
     |
     */
 
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
+    'lifetime' => $sessionLifetime,
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
@@ -127,10 +140,7 @@ return [
     |
     */
 
-    'cookie' => env(
-        'SESSION_COOKIE',
-        Str::slug((string) env('APP_NAME', 'laravel')).'-session',
-    ),
+    'cookie' => $envString('SESSION_COOKIE', Str::slug($envString('APP_NAME', 'laravel')).'-session'),
 
     /*
     |--------------------------------------------------------------------------

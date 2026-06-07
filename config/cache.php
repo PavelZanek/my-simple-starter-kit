@@ -1,6 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Str;
+
+$envString = static function (string $key, string $default): string {
+    $value = env($key, $default);
+
+    return is_string($value) ? $value : $default;
+};
 
 return [
 
@@ -15,7 +23,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => $envString('CACHE_STORE', 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -118,7 +126,7 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
+    'prefix' => env('CACHE_PREFIX', Str::slug($envString('APP_NAME', 'laravel')).'-cache-'),
 
     /*
     |--------------------------------------------------------------------------
